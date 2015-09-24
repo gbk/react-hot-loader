@@ -39,10 +39,20 @@ module.exports = function (source, map) {
     '}',
     'try {',
       '(function () {',
+        'var __instances__ = [];'
   ].join(' ');
 
+  source = source.replace(/React\.render\(/g, '__instances__[__instances__.length] = React.render(');
+
   appendText = [
-      '/* REACT HOT LOADER */',
+        '/* REACT HOT LOADER */',
+        'if (module.hot && __instances__.length) {',
+          'require("react-hot-loader/Injection").RootInstanceProvider.injectProvider({',
+            'getRootInstances: function () {',
+              'return __instances__;',
+            '}',
+          '});',
+        '}',
       '}).call(this);',
     '} finally {',
       'if (module.hot) {',
